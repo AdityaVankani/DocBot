@@ -26,6 +26,11 @@ DocBot is a personal document bot designed to answer any question from your docu
     git clone https://github.com/AdityaVankani/DocBot.git
     cd DocBot
     ```
+2. **Download ollama**:
+    ```bash
+    Download llama using below command in terminal.
+    ollama run llama2
+    ```
 
 ## Usage
 
