@@ -7,8 +7,7 @@ DocBot is a personal document bot designed to answer any question from your docu
 - **Document Querying**: Answer any question from your documents using advanced NLP techniques.
 - **Natural Language Processing**: Use Llama2 for sophisticated NLP tasks.
 - **Web Interface**: Built with Flask and styled using Tailwind CSS for a responsive and user-friendly interface.
-- **PDF Manipulation**: Utilize PyPDF for merging, splitting, and manipulating PDF files.
-- **Customizable Workflows**: Easily customize workflows to suit various document processing needs.
+
 
 ## Technologies Used
 
