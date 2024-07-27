@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal CHATbot</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    /* Add your CSS styles here */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    h1{
+      font-weight: 400;
+    }
+    h2 {
+      color: #333;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    input[type="file"],
+    input[type="text"],
+    button {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #question-answer {
+      margin-top: 20px;
+      border-top: 1px solid #ccc;
+      padding-top: 20px;
+    }
+    .message-container {
+      margin-top: 10px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    .user-message {
+      background-color: #4caf50;
+      color: white;
+      border-radius: 15px;
+      padding: 10px 15px;
+      float: right;
+      clear: both;
+      max-width: 70%;
+      margin-right: 10px;
+    }
+    .bot-message {
+      background-color: #ccc;
+      border-radius: 15px;
+      padding: 10px 15px;
+      float: left;
+      clear: both;
+      max-width: 70%;
+      margin-left: 10px;
+    }
+    /* Custom CSS */
+    /* Services Section */
+    .service-card {
+      border: none;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+    }
+    .service-card:hover {
+      transform: translateY(-5px);
+    }
+    .service-card .card-body {
+      background-color: #f8f9fa;
+    }
+    .service-card h5 {
+      color: #007bff;
+    }
+    .service-card p {
+      color: #6c757d;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    .btn-primary:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
+    }
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .navbar-nav .nav-link {
+      transition: color 0.3s;
+    }
+    .navbar-nav .nav-link:hover {
+      color: #28a745 !important;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">AI Toolkit</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('index_page') }}">Home</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+
+    <h1 style="font-size: 30px;font-weight: bold; align-items: center;justify-content: center;text-align: center;">Personal CHATBot</h1>
+    <div>
+      <!-- <h2 style="font-size: medium;">Upload PDF File</h2> -->
+      <form id="pdfForm" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="pdfFile">Choose a PDF file:</label>
+          <input type="file" id="pdfFile" accept=".pdf" required />
+        </div>
+        <button type="submit" >Upload PDF</button>
+        <div style="text-align: center;justify-content: center;align-items: center; padding-top: 15px;">
+        <a href="{{ url_for('form_sub') }}"  class="btn btn-primary">Subscribe</a>
+      </div>
+
+      </form>
+    </div>
+    <div id="chat-container" style="display: none">
+      <div id="chat-messages"></div>
+      <div id="message-box">
+        <input type="text" id="question" placeholder="Ask a question..." />
+        <button id="send-btn">Send</button>
+      </div>
+    </div>
+    <div class="mt-4" id="app" >
+      <span class="text-lg">Upload Count: <span id="upload-count" v-text="uploadCount"></span></span>
+    </div>
+    <div id="question-answer"></div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <script>
+    
+    const app = new Vue({
+      el: '#upload-count', // Target the upload-count span element
+      data: {
+        uploadCount: 0 // Initial value for upload count
+      },
+      mounted() {
+        // Fetch upload count data from the server
+        fetch('/get_upload_count') // Assuming you have a route to fetch the upload count
+          .then(response => response.json())
+          .then(data => {
+            // Update the upload count in Vue.js data
+            this.uploadCount = data.upload_count;
+          })
+          .catch(error => console.error('Error fetching upload count:', error));
+      }
+    });
+  </script>
+  <script>
+    document.getElementById('pdfForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      
+      var formData = new FormData();
+      formData.append('pdfFile', document.getElementById('pdfFile').files[0]);
+  
+      fetch('/upload', {
+          method: 'POST',
+          body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.error) {
+              // Display error message
+              alert(data.error);
+          } else {
+              alert('PDF uploaded successfully!');
+              document.getElementById('chat-container').style.display = 'block';
+              
+              // Disable the upload button if upload limit is exceeded
+              if (data.upload_count >= 10) {
+                  document.getElementById('pdfFile').disabled = true;
+              }
+          }
+      })
+      .catch(error => console.error('Error uploading PDF:', error));
+  });
+  
+  document.getElementById('send-btn').addEventListener('click', function(event) {
+      event.preventDefault();
+      sendMessage();
+  });
+  
+  function sendMessage() {
+      var question = document.getElementById('question').value;
+      if (question.trim() === '') return;
+  
+      // Display user message
+      var userMessageHTML = '<div class="message-container"><div class="user-message">' + question + '</div></div>';
+      document.getElementById('chat-messages').innerHTML += userMessageHTML;
+  
+      // Send question to server
+      fetch('/ask', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              question: question
+          })
+      })
+      .then(response => response.text())
+      .then(answer => {
+          // Display bot's answer
+          var botMessageHTML = '<div class="message-container"><div class="bot-message">' + answer + '</div></div>';
+          document.getElementById('chat-messages').innerHTML += botMessageHTML;
+  
+          // Clear input field
+          document.getElementById('question').value = '';
+      })
+      .catch(error => console.error('Error fetching answer:', error));
+  }
+  </script>
+</body>
+</html>

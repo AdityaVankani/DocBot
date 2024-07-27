@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Toolkit Services</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.13/lottie.min.js"></script>
+  <style>
+    /* Custom CSS */
+    /* Services Section */
+    .service-card {
+      border: none;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+    }
+    .service-card:hover {
+      transform: translateY(-5px);
+    }
+    .service-card .card-body {
+      background-color: #f8f9fa;
+    }
+    .service-card h5 {
+      color: #007bff;
+    }
+    .service-card p {
+      color: #6c757d;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    .btn-primary:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
+    }
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .navbar-nav .nav-link {
+      transition: color 0.3s;
+    }
+    .navbar-nav .nav-link:hover {
+      color: #28a745 !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+      <a class="navbar-brand" href="#">AI Toolkit</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('contact_html')}}">Contact Us</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+          </li>
+          {% if username %}
+          <div class="nav-item">
+            <span class="nav-link">Welcome, {{ username }}, count: <span id="upload-count" v-text="uploadCount"></span></span>
+          </div>
+          {% endif %}
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Services Section -->
+  <section id="services" class="py-5">
+    <div class="container">
+      <h2 class="text-center mb-4">Our Services</h2>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card service-card">
+            <div class="lottie-container" id="lottie-animation1"></div>
+            <div class="card-body">
+              <h5 class="card-title">Chatbot Service</h5>
+              <p class="card-text">Experience our Chatbot service similar to ChatGPT, ensuring user privacy.</p>
+              <button class="btn btn-primary" onclick="redirectToServicePage('chatbot')">Learn More</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card service-card">
+            <div class="lottie-container" id="lottie-animation2"></div>
+            <div class="card-body">
+              <h5 class="card-title">Personal Document Chatbot</h5>
+              <p class="card-text">Get personalized assistance with our document chatbot.</p>
+              <button class="btn btn-primary" onclick="redirectToServicePage('document')">Learn More</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+<!-- Subscription Section -->
+<section id="subscription" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-4">Subscribe for Unlimited PDF Uploads</h2>
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Unlimited PDF Uploads</h5>
+            <p class="card-text">Get unlimited uploads of PDF documents for just 99 rupees per month.</p>
+            <button class="btn btn-primary" onclick="redirectToServicePage('form_sub')">Subscribe Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+  <!-- JavaScript -->
+  <script>
+    // Function to redirect to service page based on service type
+    function redirectToServicePage(serviceType) {
+      // Redirect to appropriate service page
+      if (serviceType === 'chatbot') {
+        window.location.href = "{{ url_for('chats') }}";
+  
+      }
+      else if(serviceType==='form_sub')
+      {
+        window.location.href = "{{ url_for('form_sub') }}";
+      }
+       else if (serviceType === 'document') {
+        window.location.href = "{{ url_for('doc_page') }}";
+      }
+      // Add more conditions for other services if needed
+    }
+
+    // Function to load Lottie animation
+    function loadLottieAnimation(containerId, animationPath) {
+      const animationContainer = document.getElementById(containerId);
+      const animation = bodymovin.loadAnimation({
+        container: animationContainer,
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: animationPath
+      });
+    }
+
+    // Load Lottie animations for each service
+    loadLottieAnimation('lottie-animation1', 'static/chatbot.json');
+    loadLottieAnimation('lottie-animation2', 'static/doc_bot.json');
+
+    new Vue({
+    el: '#upload-count',
+    data: {
+      uploadCount: 0  // Initial count value
+    },
+    mounted() {
+      // Fetch initial count value from the server
+      this.fetchUploadCount();
+    },
+    methods: {
+      fetchUploadCount() {
+        // Fetch count value from the server using AJAX
+        fetch('/get_upload_count')
+          .then(response => response.json())
+          .then(data => {
+            // Update the uploadCount data property with the fetched value
+            this.uploadCount = data.upload_count;
+          })
+          .catch(error => {
+            console.error('Error fetching upload count:', error);
+          });
+      }
+    }
+  });
+  </script>
+
+  <!-- Bootstrap Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
