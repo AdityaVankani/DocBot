@@ -10,7 +10,7 @@ db_config = {
     'host': 'localhost',
     'user': 'root',
     'password': '',
-    'database': 'Adi_DB'
+    'database': 'XXXXX'
 }
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
