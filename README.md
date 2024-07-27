@@ -31,6 +31,12 @@ DocBot is a personal document bot designed to answer any question from your docu
     Download llama using below command in terminal.
     ollama run llama2
     ```
+3. **changes**:
+    ```bash
+    change mysql database credential to yours.
+    ```
+4. **Run docbackend.py**:
+   
 
 ## Usage
 
